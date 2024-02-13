@@ -1,0 +1,7 @@
+*.csv
+*.CSV
+
+.Rhistory
+.Rproj.user
+
+*_sf
