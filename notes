@@ -1,0 +1,7 @@
+
+
+CUGH March 2024:
+- tried to pursue some kind of network analysis, hard to do with compiled DAH data because it is essentially censored/over-aggregated.  
+- ended up making some basic models for visual presentation.  
+- shoud look again at STRAND package and models: see paper "Modelling animal network data in R using STRAND"  
+

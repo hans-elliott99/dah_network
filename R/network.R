@@ -1,7 +1,6 @@
-
-
 library(data.table)
 library(igraph)
+library(ggraph)
 
 
 db <- fread(here::here("data", "dah_clean.csv"))
@@ -15,12 +14,34 @@ flow <- db[year == 2020,
            by = .(origin = source,
                   dest = recipient_isocode
                   )]
+flow <- flow[! origin %in% c("Private_other", "BMGF", "Corporate_donations")]
+flow[, origin := gsub("_", " ", origin)]
+
+
+
 flow <- flow[traffic != 0]
 
 opp <- data.table(origin = flow$dest,
-                  dest = flow$origin, traffic = 0,
-                  gbd_superregion = "Donor")
+                  dest = flow$origin, traffic = 0)
 flow <- rbind(flow, opp)
+
+
+# map
+country_polys <- sf::read_sf(here::here("data", "country_sf"))
+country_polys$ADMIN <- fcase(
+  country_polys$ADMIN == "Cabo Verde", "Cape Verde",
+  country_polys$ADMIN == "Republic of the Congo", "Congo",
+  country_polys$ADMIN == "Ivory Coast", "Cote d'Ivoire",
+  country_polys$ADMIN == "Czechia", "Czech Republic",
+  country_polys$ADMIN == "Republic of Serbia", "Serbia",
+  country_polys$ADMIN == "Gambia", "The Gambia",
+  country_polys$ADMIN == "East Timor", "Timor-Leste",
+  country_polys$ADMIN == "Wallis and Futuna", "Wallis and Futuna Islands",
+  country_polys$ADMIN == "United States of America", "United States",
+  rep_len(TRUE, nrow(country_polys)), country_polys$ADMIN
+)
+
+
 
 #
 # define flow network
@@ -71,10 +92,14 @@ plot(flownet, layout = layout.fruchterman.reingold(flownet))
 
 ggraph(flownet, layout = "fr") +
   geom_edge_arc(aes(alpha = E(flownet)$weight),
-                arrow = arrow(type = "closed", length = unit(2, "mm"))) +
-  geom_node_point(aes(size = inflow / 1e6,
-                      color = region),
-                  alpha = 0.5)
+                arrow = arrow(type = "closed", length = unit(2, "mm")),
+                alpha = 0.05) +
+  geom_node_point(aes(color = region),
+                  alpha = 0.5) +
+  hrbrthemes::theme_ipsum_pub()
+
+#
+
 
 
 

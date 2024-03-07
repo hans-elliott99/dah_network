@@ -9,7 +9,7 @@ pkgs <- c(
   "here",
   "data.table",
   "ggplot2",
-  "ergm",
+  # "ergm",
   # sudo apt-get -y install libglpk-dev
   "igraph",
   "sf"

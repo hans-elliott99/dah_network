@@ -42,7 +42,7 @@ mapdt <- merge(country_polys,
                recip_dah[, .(ADMIN = recipient_country, dah)],
                all.x = TRUE)
 
-mapdt[, dah := dah / 1e9]
+mapdt <- transform(mapdt, dah = dah / 1e9)
 ggplot(mapdt) +
   geom_sf() + #aes(fill = dah)) +
   geom_point(
